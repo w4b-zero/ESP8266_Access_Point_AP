@@ -6,6 +6,10 @@
   of this software and associated documentation files.
   The above copyright notice and this permission notice shall be included in all
   copies or substantial portions of the Software.
+  
+  the original repository: https://github.com/RuiSantosdotme/Random-Nerd-Tutorials
+  the original Sketch: https://github.com/RuiSantosdotme/Random-Nerd-Tutorials/blob/master/Projects/ESP8266/ESP8266_Access_Point_AP.ino
+  
 *********/
 
 // Import required libraries

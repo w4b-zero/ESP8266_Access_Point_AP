@@ -21,7 +21,8 @@
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <Wire.h>               
-#include "SSD1306Wire.h"        
+#include "SSD1306Wire.h"
+// Import Wifi Logo         
 #include "data/images.h"
 
 // *****Config*******

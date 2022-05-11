@@ -22,12 +22,21 @@
 #include <DHT.h>
 #include <Wire.h>               
 #include "SSD1306Wire.h"
+#include <EEPROM.h>
+
 // Import Wifi Logo         
 #include "data/images.h"
 
+// Import HTML-Pages
+#include "html/index.h"
+#include "html/dhtinfo.h"
+#include "html/sets.h"
+
+// ******************
 // *****Config*******
-const char* ssid     = "Test-AP"; // Name of the AP
-const char* password = "123456789"; // Password of the AP
+// ******************
+String esid     = "Test-AP"; // Name of the AP
+String pass = "123456789"; // Password of the AP
 
 IPAddress local_IP(192,168,188,1); // IP of the AP 
 IPAddress gateway(192,168,188,1); // Gateway of the AP
@@ -42,8 +51,22 @@ IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 
 #define SCREEN_SWITCH_TIME 3000 // 3000=3Sek. to switch the infos on the ssd1306-Screen
 
-// *****Config end*****
+// 0 = boot log & errors
+// 1 = boot log & errors + systemmessages
+// 2 = boot log & errors + systemmessages + warnings
+// 3 = boot log & errors + systemmessages + warnings + infos
+int debug_mode = 3; 
 
+// ********************
+// *****Config end*****
+// ********************
+
+
+String PARAM_INPUT_1 = "esid";
+String PARAM_INPUT_2 = "pass";
+String content;
+int i = 0;
+int statusCode;
 
 typedef void (*Demo)(void);
 int demoMode = 0;
@@ -61,67 +84,10 @@ AsyncWebServer server(80);
 // The value will quickly become too large for an int to store
 unsigned long previousMillis = 0;    // will store last time DHT was updated
 
-// Updates DHT readings every 10 seconds
-const long interval = 10000;  
+// Updates DHT readings every 30 seconds
+const long interval = 30000;  
 
-const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    html {
-     font-family: Arial;
-     display: inline-block;
-     margin: 0px auto;
-     text-align: center;
-    }
-    h2 { font-size: 3.0rem; }
-    p { font-size: 3.0rem; }
-    .units { font-size: 1.2rem; }
-    .dht-labels{
-      font-size: 1.5rem;
-      vertical-align:middle;
-      padding-bottom: 15px;
-    }
-  </style>
-</head>
-<body>
-  <h2>ESP8266 DHT Server</h2>
-  <p>
-    <span class="dht-labels">Temperature</span> 
-    <span id="temperature">%TEMPERATURE%</span>
-    <sup class="units">&deg;C</sup>
-  </p>
-  <p>
-    <span class="dht-labels">Humidity</span>
-    <span id="humidity">%HUMIDITY%</span>
-    <sup class="units">%</sup>
-  </p>
-</body>
-<script>
-setInterval(function ( ) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("temperature").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("GET", "/temperature", true);
-  xhttp.send();
-}, 10000 ) ;
 
-setInterval(function ( ) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("humidity").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("GET", "/humidity", true);
-  xhttp.send();
-}, 10000 ) ;
-</script>
-</html>)rawliteral";
 
 // Replaces placeholder with DHT values
 String processor(const String& var){
@@ -136,48 +102,196 @@ String processor(const String& var){
 }
 
 void setup(){
-  // Serial port for debugging purposes
   Serial.begin(115200);
+  EEPROM.begin(512); 
   dht.begin();
   display.init();
   display.clear();
 
-  //display.flipScreenVertically();
+//  display.flipScreenVertically();
 //  display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_16);
   display.drawString(10, 0, "Setting AP...");
   display.display(); 
-  //delay(1000);
 
-  Serial.print("Setting soft-AP configuration ... ");
+
+  Serial.println();
+  Serial.println("************************");
+  Serial.println("*    mobile soft-ap    *");
+  Serial.println("************************");
+  Serial.println();
+  Serial.println("boot: mobile soft-ap started....");
+  Serial.println("boot: reading eeprom data");
+  
+  String qsid = "";
+   char* qsid2 ="";
+  for (int i = 0; i < 32; ++i)
+  {
+    qsid += char(EEPROM.read(i));
+    qsid2 += char(EEPROM.read(i));
+  }
+  String qsidtest = "";
+  for (int itest = 0; itest < qsid.length(); ++itest)
+  {
+    qsidtest += char(EEPROM.read(itest));
+  }
+  if (debug_mode >= 3)
+  {
+    Serial.print("info: SSIDtest: ");
+    Serial.println(qsidtest);
+    Serial.print("info: qSID: ");
+    Serial.println(qsid);
+  }
+  //if (qsidtest == NULL) {} else {esid = qsid;}
+  if (debug_mode >= 1)
+  {
+   if (qsidtest == NULL) {Serial.println("system: qsid is empty - default used");} else {Serial.println("system: qsid is loadet");}
+  }
+
+
+  String qpass = "";
+  for (int i = 32; i < 96; ++i)
+  {
+    qpass += char(EEPROM.read(i));
+  }
+  String qpasstest = "";
+  for (int itest = 32; itest < qpass.length(); ++itest)
+  {
+    qpasstest += char(EEPROM.read(itest));
+  }
+  if (debug_mode >= 3)
+  {
+    Serial.print("info: PASStest: ");
+    Serial.println(qpasstest);
+    Serial.print("info: qPASS: ");
+    Serial.println(qpass);
+  }
+
+  //if (qpasstest == NULL) {} else {pass = qpasstest;}
+  if (debug_mode >= 1)
+  {
+    if (qpasstest == NULL) {Serial.println("system: qpass is empty - default used");} else {Serial.println("system: qpass is loadet");}
+  }
+
+  Serial.print("boot: setting soft-ap configuration ... ");
   Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
-  Serial.print("Setting soft-AP ... ");
-  Serial.println(WiFi.softAP(ssid, password) ? "Ready" : "Failed!");
-      Serial.print("SSID: ");
-      Serial.println(ssid);
+  Serial.print("boot: start soft-ap server ... ");
+  Serial.println(WiFi.softAP(esid.c_str(), pass.c_str()) ? "Ready" : "Failed!");
+      Serial.print("boot: ssid:");
+      Serial.println(esid.c_str());
 
-  Serial.print("Soft-AP IP address = ");
+  Serial.print("boot: soft-ap ip:");
   Serial.println(WiFi.softAPIP());
-  
-  IPAddress IP = WiFi.softAPIP();
-    Serial.print("AP IP address: ");
-    Serial.println(IP);
-  // Print ESP8266 Local IP Address
-  Serial.println(WiFi.localIP());
+
+  Serial.println("boot: soft-ap startet!");
+  Serial.println();
+  Serial.println("************************");
+  Serial.println("*mobile soft-ap online!*");
+  Serial.println("************************");
+  Serial.println();
 
   display.clear();
 
-  
+  // Replaces placeholder with values
+String processor(const String& var){
+  //Serial.println(var);
+  if(var == "QSID"){
+    return qsid;
+  }
+  return String();
+}
+
+
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html, processor);
   });
-  server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", String(t).c_str());
+  server.on("/dht", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", dhtinfo_html, processor);
   });
-  server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/plain", String(h).c_str());
+  server.on("/sets", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", sets_html, processor);
+  });
+  server.on("/esetw", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    String esid;
+    String pass;
+    // GET input1 value on <ESP_IP>/update?output=<qsid>&state=<pass>
+    if (request->hasParam(PARAM_INPUT_1) && request->hasParam(PARAM_INPUT_2)) {
+      esid = request->getParam(PARAM_INPUT_1)->value();
+      pass = request->getParam(PARAM_INPUT_2)->value();
+      digitalWrite(esid.toInt(), pass.toInt());
+      if (esid.length() > 0 && pass.length() > 0) {
+        if (debug_mode >= 1)
+        {
+          Serial.println("system: clearing eeprom");
+        }
+        for (int i = 0; i < 96; ++i) {
+          EEPROM.write(i, 0);
+        }
+        if (debug_mode >= 3)
+        {
+          Serial.print("info: esid:");
+          Serial.println(esid);
+          Serial.print("info: pass:");
+          Serial.println(pass);
+        }
+        if (debug_mode >= 1)
+        {
+          Serial.println("system: writing eeprom ssid:");
+        }
+        for (int i = 0; i < esid.length(); ++i)
+        {
+          EEPROM.write(i, esid[i]);
+          if (debug_mode >= 1)
+          {
+            Serial.print("system: wrote: ");
+            Serial.println(esid[i]);
+          }
+        }
+        if (debug_mode >= 1)
+        {
+          Serial.println("writing eeprom pass:");
+        }
+        for (int i = 0; i < pass.length(); ++i)
+        {
+          EEPROM.write(32 + i, pass[i]);
+          if (debug_mode >= 1)
+          {
+            Serial.print("system: wrote: ");
+            Serial.println(pass[i]);
+          }
+        }
+        EEPROM.commit();
+        content = "{\"Success\":\"saved to eeprom... reset to boot into new wifi\"}";
+        statusCode = 200;
+        if (debug_mode >= 1)
+        {
+          Serial.print("system: new ssid:");
+          Serial.println(esid);
+          Serial.print("system: new password:");
+          Serial.println(pass);
+        }
+        request->send(200, "text/plain", content);
+        ESP.reset();
+      } else {
+        content = "{\"Error\":\"404 not found\"}";
+        statusCode = 404;
+        if (debug_mode >= 0)
+        {
+         Serial.println("error: empty data send!");
+        }
+      }
+    }
+    else {
+      content = "{\"Error\":\"No Data send!\"}";
+      statusCode = 404;
+      if (debug_mode >= 0)
+      {
+       Serial.println("error: no data send!");
+      }
+    }
+    request->send(statusCode, "application/json", content);
   });
 
   // Start server
@@ -191,7 +305,7 @@ void starttext() {
   display.setFont(ArialMT_Plain_10);
   display.drawString(64, 15, "SSID:");
   display.setFont(ArialMT_Plain_24);
-  display.drawString(64, 24, ssid);
+  display.drawString(64, 24, esid);
   display.setFont(ArialMT_Plain_16);
   display.drawString(64, 49, "Active");
 }
@@ -218,7 +332,7 @@ void logo() {
   display.drawXbm(34, 13, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_16);
-  display.drawString(64, 49, ssid);
+  display.drawString(64, 49, esid);
 }
 Demo demos[] = {starttext, statstext, logo};
 int demoLength = (sizeof(demos) / sizeof(Demo));
@@ -232,13 +346,14 @@ void loop(){
 
   if (millis() - timeSinceLastModeSwitch > SCREEN_SWITCH_TIME) {
     demoMode = (demoMode + 1)  % demoLength;
-  demos[demoMode]();
+    demos[demoMode]();
     display.display();
-      Serial.println("info: switch screen");
-
+      if (debug_mode >= 3 )
+      {
+        Serial.println("info: switch screen");
+      }
     timeSinceLastModeSwitch = millis();
   }
-
 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
@@ -250,24 +365,39 @@ void loop(){
     //float newT = dht.readTemperature(true);
     // if temperature read failed, don't change t value
     if (isnan(newT)) {
-      Serial.println("Failed to read from DHT sensor!");
+      if (debug_mode >= 0)
+      {
+        Serial.println("error: failed to read data from sensor!");
+      }
     }
     else {
       t = newT;
-      Serial.println("temp: " + String(t));
+      if (debug_mode >= 1)
+      {
+        Serial.println("system: temperature: " + String(t));
+      }
     }
     // Read Humidity
     float newH = dht.readHumidity();
     // if humidity read failed, don't change h value 
     if (isnan(newH)) {
-      Serial.println("Failed to read from DHT sensor!");
+      if (debug_mode >= 0)
+      {
+        Serial.println("error: failed to read data from sensor!");
+      }
     }
     else {
       h = newH;
-      Serial.println("humi:" + String(h));
+      if (debug_mode >= 1)
+      {
+        Serial.println("system: humidity:" + String(h));
+      }
     }
-      Serial.print("Clients:");
-      Serial.println(String(WiFi.softAPgetStationNum()));
+      if (debug_mode >= 1)
+      {
+        Serial.print("system: clients:");
+        Serial.println(String(WiFi.softAPgetStationNum()));
+      }
 
   }
 

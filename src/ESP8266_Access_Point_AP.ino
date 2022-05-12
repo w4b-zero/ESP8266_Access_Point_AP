@@ -55,7 +55,7 @@ IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 // 1 = boot log & errors + systemmessages
 // 2 = boot log & errors + systemmessages + warnings
 // 3 = boot log & errors + systemmessages + warnings + infos
-int debug_mode = 3; 
+int debug_mode = 1; 
 
 // ********************
 // *****Config end*****
@@ -169,7 +169,8 @@ void setup(){
       Serial.println("system: SSID from eeprom is used!");
     }
 
-    //esid = qsid;  
+    esid = qsid;  // deaktivate for ignore eeprom data
+
     char* qsid_html = qsid_const;
      int count = 0;
  
@@ -217,17 +218,18 @@ void setup(){
     if (debug_mode >= 1){
       Serial.println("system: PASS from eeprom is used!");
     }
-  //pass = qpass;
+  
+  pass = qpass;   // deaktivate for ignore eeprom data
+
     char* qpass_html = qpass_const;
      int count = 0;
  
-    for (int i = 0; qsid_html[i]; i++)
-        if (qsid_html[i] != ' ')
-            qsid_html[count++] = qsid_html[i]; // here count is
+    for (int i = 0; qpass_html[i]; i++)
+        if (qpass_html[i] != ' ')
+            qpass_html[count++] = qpass_html[i]; // here count is
                                    // incremented
-    qsid_html[count] = '\0';
-    //qpass_html = qpass;
-  }
+    qpass_html[count] = '\0';
+    }
 
   
   Serial.print("boot: setting soft-ap configuration ... ");

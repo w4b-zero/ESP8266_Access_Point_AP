@@ -21,6 +21,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
   <h2>ESP8266 mobile Soft-AP</h2>
+  <a href='sets'>Settings</a>
   <p>
     <span class="dht-labels">Temperature</span> 
     <span id="temperature">%TEMPERATURE%</span>

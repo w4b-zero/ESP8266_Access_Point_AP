@@ -55,7 +55,7 @@ IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 // 1 = boot log & errors + systemmessages
 // 2 = boot log & errors + systemmessages + warnings
 // 3 = boot log & errors + systemmessages + warnings + infos
-int debug_mode = 1; 
+int debug_mode = 3; 
 
 // ********************
 // *****Config end*****
@@ -76,8 +76,8 @@ SSD1306Wire display(0x3c, 4, 14);   // ADDRESS, SDA, SCL  -  SDA and SCL usually
 // current temperature & humidity, updated in loop()
 float t = 0.0;
 float h = 0.0;
-String qsid_html = esid;
-String qpass_html = pass;
+String qsid_html = "Mobile-AP";
+String qpass_html = "password";
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
@@ -169,9 +169,9 @@ void setup(){
       Serial.println("system: SSID from eeprom is used!");
     }
 
-    esid = qsid;  // deaktivate for ignore eeprom data
 
-    char* qsid_html = qsid_const;
+//    char* qsid_html = qsid_const;
+    String qsid_html = qsid;
      int count = 0;
  
     for (int i = 0; qsid_html[i]; i++)
@@ -179,7 +179,14 @@ void setup(){
             qsid_html[count++] = qsid_html[i]; // here count is
                                    // incremented
     qsid_html[count] = '\0';
-  }
+
+      esid = qsid_html;  // deaktivate for ignore eeprom data
+
+//      Serial.println(esid);
+//      Serial.println(qsid);
+      Serial.println(qsid_html);
+
+}
 
 
   String qpass = "";
@@ -219,9 +226,9 @@ void setup(){
       Serial.println("system: PASS from eeprom is used!");
     }
   
-  pass = qpass;   // deaktivate for ignore eeprom data
 
-    char* qpass_html = qpass_const;
+//    char* qpass_html = qpass_const;
+    String qpass_html = qpass;
      int count = 0;
  
     for (int i = 0; qpass_html[i]; i++)
@@ -229,7 +236,13 @@ void setup(){
             qpass_html[count++] = qpass_html[i]; // here count is
                                    // incremented
     qpass_html[count] = '\0';
-    }
+
+  pass = qpass_html;   // deaktivate for ignore eeprom data
+
+  //      Serial.println(pass);
+  //      Serial.println(qpass);
+      Serial.println(qpass_html);
+  }
 
   
   Serial.print("boot: setting soft-ap configuration ... ");

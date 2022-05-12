@@ -8,3 +8,4 @@ changes by me
 addet ssd1306 Display<br> 
 addet more infos on serial console.<br>
 import to platform.io<br>
+ssid and pass on webpanel changeable

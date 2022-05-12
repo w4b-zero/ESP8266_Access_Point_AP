@@ -35,7 +35,7 @@
 // ******************
 // *****Config*******
 // ******************
-String esid     = "Test-AP"; // Name of the AP
+String esid = "Test-AP"; // Name of the AP
 String pass = "123456789"; // Password of the AP
 
 IPAddress local_IP(192,168,188,1); // IP of the AP 
@@ -76,7 +76,8 @@ SSD1306Wire display(0x3c, 4, 14);   // ADDRESS, SDA, SCL  -  SDA and SCL usually
 // current temperature & humidity, updated in loop()
 float t = 0.0;
 float h = 0.0;
-
+String qsid_html = esid;
+String qpass_html = pass;
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
@@ -97,6 +98,12 @@ String processor(const String& var){
   }
   else if(var == "HUMIDITY"){
     return String(h);
+  }
+  else if(var == "QSID"){
+    return String(qsid_html);
+  }
+  else if(var == "QPASS"){
+    return String(qpass_html);
   }
   return String();
 }
@@ -124,55 +131,105 @@ void setup(){
   Serial.println("boot: reading eeprom data");
   
   String qsid = "";
-   char* qsid2 ="";
+  String qsid2 ="";
+  char* qsid_const = "";
   for (int i = 0; i < 32; ++i)
   {
     qsid += char(EEPROM.read(i));
-    qsid2 += char(EEPROM.read(i));
+    qsid_const += char(EEPROM.read(i));
+    qsid2 += EEPROM.read(i);
   }
-  String qsidtest = "";
-  for (int itest = 0; itest < qsid.length(); ++itest)
-  {
-    qsidtest += char(EEPROM.read(itest));
-  }
+//  String qsidtest = "";
+//  for (int itest = 0; itest < qsid.length(); ++itest)
+// {
+//    qsidtest += char(EEPROM.read(itest));
+//  }
+
+
   if (debug_mode >= 3)
   {
-    Serial.print("info: SSIDtest: ");
-    Serial.println(qsidtest);
-    Serial.print("info: qSID: ");
+//    Serial.print("info: SSIDtest: ");
+//    Serial.println(qsidtest);
+    Serial.print("info: SSID: ");
     Serial.println(qsid);
+
+//    Serial.print("info: test: ");
+//    Serial.println(qsid2);
   }
-  //if (qsidtest == NULL) {} else {esid = qsid;}
-  if (debug_mode >= 1)
-  {
-   if (qsidtest == NULL) {Serial.println("system: qsid is empty - default used");} else {Serial.println("system: qsid is loadet");}
+  if (qsid2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
+    if (debug_mode >= 1){
+      Serial.println("system: SSID from eeprom is empty! - default used!");
+    }
+  } else if (qsid2 ==""){
+    if (debug_mode >= 1){
+      Serial.println("system: SSID from eeprom read error! - default used!");
+    }
+  } else {
+    if (debug_mode >= 1){
+      Serial.println("system: SSID from eeprom is used!");
+    }
+
+    //esid = qsid;  
+    char* qsid_html = qsid_const;
+     int count = 0;
+ 
+    for (int i = 0; qsid_html[i]; i++)
+        if (qsid_html[i] != ' ')
+            qsid_html[count++] = qsid_html[i]; // here count is
+                                   // incremented
+    qsid_html[count] = '\0';
   }
 
 
   String qpass = "";
+  String qpass2 = "";
+  char* qpass_const = "";
   for (int i = 32; i < 96; ++i)
   {
     qpass += char(EEPROM.read(i));
+    qpass_const += char(EEPROM.read(i));
+    qpass2 += EEPROM.read(i);
   }
-  String qpasstest = "";
-  for (int itest = 32; itest < qpass.length(); ++itest)
-  {
-    qpasstest += char(EEPROM.read(itest));
-  }
+//  String qpasstest = "";
+//  for (int itest = 32; itest < qpass.length(); ++itest)
+//  {
+//    qpasstest += char(EEPROM.read(itest));
+//  }
   if (debug_mode >= 3)
   {
-    Serial.print("info: PASStest: ");
-    Serial.println(qpasstest);
-    Serial.print("info: qPASS: ");
+//    Serial.print("info: PASStest: ");
+//    Serial.println(qpasstest);
+    Serial.print("info: PASS: ");
     Serial.println(qpass);
+//    Serial.print("info: test: ");
+//    Serial.println(qpass2);
   }
 
-  //if (qpasstest == NULL) {} else {pass = qpasstest;}
-  if (debug_mode >= 1)
-  {
-    if (qpasstest == NULL) {Serial.println("system: qpass is empty - default used");} else {Serial.println("system: qpass is loadet");}
+  if (qpass2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
+    if (debug_mode >= 1){
+      Serial.println("system: PASS from eeprom is empty! - default used!");
+    }
+  } else if (qpass2 ==""){
+    if (debug_mode >= 1){
+      Serial.println("system: PASS from eeprom read error! - default used!");
+    }
+  } else {
+    if (debug_mode >= 1){
+      Serial.println("system: PASS from eeprom is used!");
+    }
+  //pass = qpass;
+    char* qpass_html = qpass_const;
+     int count = 0;
+ 
+    for (int i = 0; qsid_html[i]; i++)
+        if (qsid_html[i] != ' ')
+            qsid_html[count++] = qsid_html[i]; // here count is
+                                   // incremented
+    qsid_html[count] = '\0';
+    //qpass_html = qpass;
   }
 
+  
   Serial.print("boot: setting soft-ap configuration ... ");
   Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
@@ -193,15 +250,6 @@ void setup(){
 
   display.clear();
 
-  // Replaces placeholder with values
-String processor(const String& var){
-  //Serial.println(var);
-  if(var == "QSID"){
-    return qsid;
-  }
-  return String();
-}
-
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -220,6 +268,8 @@ String processor(const String& var){
     if (request->hasParam(PARAM_INPUT_1) && request->hasParam(PARAM_INPUT_2)) {
       esid = request->getParam(PARAM_INPUT_1)->value();
       pass = request->getParam(PARAM_INPUT_2)->value();
+      //esid += ";";
+      //pass += ";";
       digitalWrite(esid.toInt(), pass.toInt());
       if (esid.length() > 0 && pass.length() > 0) {
         if (debug_mode >= 1)
@@ -339,6 +389,7 @@ int demoLength = (sizeof(demos) / sizeof(Demo));
 long timeSinceLastModeSwitch = 0;
 
 void loop(){
+ 
   // clear the display
   display.clear();
   // draw the current demo method

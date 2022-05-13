@@ -211,7 +211,7 @@ p {
   </div>
   <div id="footerwrap">
     <div id="footer">
-      <p>v. 0.0.1</p>
+      <p>code from <a href="https://github.com/RuiSantosdotme" target="_blank">Rui Santos</a> modify by <a href="https://github.com/w4b-zero" target="_blank">zero&trade;</a> v. 0.0.1</p>
     </div>
   </div>
 </div>

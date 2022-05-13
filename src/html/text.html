@@ -1,4 +1,3 @@
-const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,14 +14,14 @@ p {
 }
 
 #wrapper {
-    width: 100%%;
+    width: 100%;
     min-width: 300px;
     max-width: 1024px;
     margin: 0 auto;
 }
 
 #headerwrap {
-    width: 100%%;
+    width: 100%;
     float: left;
     margin: 0 auto;
 }
@@ -37,7 +36,7 @@ p {
 }
 
 #navigationwrap {
-    width: 100%%;
+    width: 100%;
     float: left;
     margin: 0 auto;
 }
@@ -54,11 +53,11 @@ p {
 
 #contentliquid {
     float: left;
-    width: 100%%;
+    width: 100%;
 }
 
 #contentwrap {
-    width: 100%%;
+    width: 100%;
     float: left;
 }
 
@@ -75,7 +74,7 @@ p {
 
 #tabellewrap {
     float: left;
-    width: 100%%;
+    width: 100%;
     background: #e6e5e5;
     border-radius: 10px;
     border: 1px solid #000000;
@@ -92,13 +91,13 @@ p {
     display: flex;
     justify-content: left;
     text-align: left;
-    width: 100%%;
+    width: 100%;
 }
 #tabelle_center {
     display: flex;
     justify-content: center;
     text-align: center;
-    width: 100%%;
+    width: 100%;
 }
 #tabelle_header {
     background: #e6e5e5;
@@ -109,7 +108,7 @@ p {
     display: flex;
     justify-content: center;
     text-align: center;
-    width: 100%%;
+    width: 100%;
 }
 #tabelle_right {
     background: #e6e5e5;
@@ -120,11 +119,11 @@ p {
     display: flex;
     justify-content: right;
     text-align: right;
-    width: 50%%;
+    width: 50%;
 }
 
 #footerwrap {
-    width: 100%%;
+    width: 100%;
     float: left;
     margin: 0 auto;
     clear: both;
@@ -182,16 +181,30 @@ p {
     </div>
     <div id="contentliquid"><div id="contentwrap">
       <div id="content">
-  <p>
-    <span class="dht-labels">Temperature</span> 
-    <span id="temperature">%TEMPERATURE%</span>
-    <sup class="units">&deg;C</sup>
-  </p>
-  <p>
-    <span class="dht-labels">Humidity</span>
-    <span id="humidity">%HUMIDITY%</span>
-    <sup class="units">%</sup>
-  </p>
+        <p>
+          <form method='get' action='esetw'>
+            <div id="tabellewrap">
+              Soft-AP Zugangsdaten            
+              <div id="tabelle_center">
+                <div id="tabelle_right">
+                  <label>SSID: </label>
+                </div>    
+                <div id="tabelle_left">
+                  <input name='esid' value='%QSID%' length=32>
+                </div>
+              </div>  
+              <div id="tabelle_center">
+                <div id="tabelle_right">
+                  Passwort:
+                </div>    
+                <div id="tabelle_left">
+                  <input name='pass' value='%QPASS%' length=64>
+                </div>
+              </div>  
+              <input type='submit'>
+            </div>
+          </form>
+        </p>
       </div>
     </div>
   </div>
@@ -202,27 +215,4 @@ p {
   </div>
 </div>
 </body>
-<script>
-setInterval(function ( ) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("temperature").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("GET", "/temperature", true);
-  xhttp.send();
-}, 10000 ) ;
-
-setInterval(function ( ) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("humidity").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("GET", "/humidity", true);
-  xhttp.send();
-}, 10000 ) ;
-</script>
-</html>)rawliteral";
+</html>

@@ -38,8 +38,8 @@
 String esid = "Test-AP"; // Name of the AP
 String pass = "123456789"; // Password of the AP
 
-IPAddress local_IP(192,168,188,1); // IP of the AP 
-IPAddress gateway(192,168,188,1); // Gateway of the AP
+IPAddress local_IP(192,168,1,1); // IP of the AP 
+IPAddress gateway(192,168,1,1); // Gateway of the AP
 IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 
 #define DHTPIN 5     // Digital pin connected to the DHT sensor
@@ -55,7 +55,8 @@ IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 // 1 = boot log & errors + systemmessages
 // 2 = boot log & errors + systemmessages + warnings
 // 3 = boot log & errors + systemmessages + warnings + infos
-int debug_mode = 3; 
+// 4 = boot log & errors + systemmessages + warnings + infos + debug
+int debug_mode = 4; 
 
 // ********************
 // *****Config end*****
@@ -131,30 +132,31 @@ void setup(){
   Serial.println("boot: reading eeprom data");
   
   String qsid = "";
+  String qsid_read = "";
   String qsid2 ="";
-  char* qsid_const = "";
+  String qsid3 ="";
   for (int i = 0; i < 32; ++i)
   {
-    qsid += char(EEPROM.read(i));
-    qsid_const += char(EEPROM.read(i));
-    qsid2 += EEPROM.read(i);
+    qsid_read = char(EEPROM.read(i)); // 1 tranlated char to  1 string
+    qsid2 += EEPROM.read(i); // 1 char addet to the complete string
+    qsid3 = EEPROM.read(i); // 1 char to 1 string
+    int count = 0;
+    if (qsid3 == String('0')){} 
+    else {
+      qsid += char(EEPROM.read(i)); // here count is
+      if (debug_mode >= 4)
+      {
+        Serial.print("char: ");
+        Serial.println(qsid3);
+        Serial.print("string: ");
+        Serial.println(qsid_read);
+      }
+    }
   }
-//  String qsidtest = "";
-//  for (int itest = 0; itest < qsid.length(); ++itest)
-// {
-//    qsidtest += char(EEPROM.read(itest));
-//  }
-
-
   if (debug_mode >= 3)
   {
-//    Serial.print("info: SSIDtest: ");
-//    Serial.println(qsidtest);
     Serial.print("info: SSID: ");
     Serial.println(qsid);
-
-//    Serial.print("info: test: ");
-//    Serial.println(qsid2);
   }
   if (qsid2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
     if (debug_mode >= 1){
@@ -168,52 +170,39 @@ void setup(){
     if (debug_mode >= 1){
       Serial.println("system: SSID from eeprom is used!");
     }
-
-
-//    char* qsid_html = qsid_const;
     String qsid_html = qsid;
-     int count = 0;
- 
-    for (int i = 0; qsid_html[i]; i++)
-        if (qsid_html[i] != ' ')
-            qsid_html[count++] = qsid_html[i]; // here count is
-                                   // incremented
-    qsid_html[count] = '\0';
-
-      esid = qsid_html;  // deaktivate for ignore eeprom data
-
-//      Serial.println(esid);
-//      Serial.println(qsid);
-      Serial.println(qsid_html);
-
-}
+    esid = qsid;  // deaktivate for ignore eeprom data
+  }
 
 
   String qpass = "";
-  String qpass2 = "";
-  char* qpass_const = "";
+  String qpass_read = "";
+  String qpass2 ="";
+  String qpass3 ="";
   for (int i = 32; i < 96; ++i)
   {
-    qpass += char(EEPROM.read(i));
-    qpass_const += char(EEPROM.read(i));
-    qpass2 += EEPROM.read(i);
+    qpass_read = char(EEPROM.read(i)); // 1 tranlated char to  1 string
+    qpass2 += EEPROM.read(i); // 1 char addet to the complete string
+    qpass3 = EEPROM.read(i); // 1 char to 1 string
+    int count = 0;
+    if (qpass3 == String('0')){} 
+    else {
+      qpass += char(EEPROM.read(i)); // here count is
+      if (debug_mode >= 4)
+      {
+        Serial.print("char: ");
+        Serial.println(qpass3);
+        Serial.print("string: ");
+        Serial.println(qpass_read);
+      }
+    }
   }
-//  String qpasstest = "";
-//  for (int itest = 32; itest < qpass.length(); ++itest)
-//  {
-//    qpasstest += char(EEPROM.read(itest));
-//  }
   if (debug_mode >= 3)
   {
-//    Serial.print("info: PASStest: ");
-//    Serial.println(qpasstest);
     Serial.print("info: PASS: ");
     Serial.println(qpass);
-//    Serial.print("info: test: ");
-//    Serial.println(qpass2);
   }
-
-  if (qpass2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
+  if (qpass2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
     if (debug_mode >= 1){
       Serial.println("system: PASS from eeprom is empty! - default used!");
     }
@@ -225,23 +214,8 @@ void setup(){
     if (debug_mode >= 1){
       Serial.println("system: PASS from eeprom is used!");
     }
-  
-
-//    char* qpass_html = qpass_const;
     String qpass_html = qpass;
-     int count = 0;
- 
-    for (int i = 0; qpass_html[i]; i++)
-        if (qpass_html[i] != ' ')
-            qpass_html[count++] = qpass_html[i]; // here count is
-                                   // incremented
-    qpass_html[count] = '\0';
-
-  pass = qpass_html;   // deaktivate for ignore eeprom data
-
-  //      Serial.println(pass);
-  //      Serial.println(qpass);
-      Serial.println(qpass_html);
+    pass = qpass;  // deaktivate for ignore eeprom data
   }
 
   
@@ -404,7 +378,8 @@ int demoLength = (sizeof(demos) / sizeof(Demo));
 long timeSinceLastModeSwitch = 0;
 
 void loop(){
- 
+  qsid_html = esid;
+  qpass_html = pass;
   // clear the display
   display.clear();
   // draw the current demo method

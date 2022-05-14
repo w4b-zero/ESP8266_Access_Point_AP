@@ -12,10 +12,15 @@ changes by me
 + config stored in eeprom<br>
 + addet webpanel with config & infos<br>
 <br>
+Last Relase: v0.0.1<br>
+
+
 Browser (win/Firefox)<br>
-<img src="img/index.jpg"><br>
-<img src="img/settings.jpg"><br>
+<table>
+<tr><td align="center">Home<br><img src="img/index.jpg"></td></tr>
+<tr><td align="center">Settings<br><img src="img/settings.jpg"></td></tr>
+</table>
 <br>
 Mobile (android/chrome)<br>
-<img src="img/index_mobile.jpg"><img src="img/settings_mobile.jpg"><br>
+<table><tr><td align="center">Home<br><img src="img/index_mobile.jpg"></td><td align="center">Settings<br><img src="img/settings_mobile.jpg"></td></tr></table>
 

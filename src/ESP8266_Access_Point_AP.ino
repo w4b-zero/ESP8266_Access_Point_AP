@@ -37,10 +37,7 @@
 // ******************
 String esid = "Test-AP"; // Name of the AP
 String pass = "123456789"; // Password of the AP
-
-IPAddress local_IP(192,168,1,1); // IP of the AP 
-IPAddress gateway(192,168,1,1); // Gateway of the AP
-IPAddress subnet(255,255,255,0); // Subnetmask of the AP
+String apip = "192.168.1.1"; // IP of the AP
 
 #define DHTPIN 5     // Digital pin connected to the DHT sensor
 
@@ -56,7 +53,7 @@ IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 // 2 = boot log & errors + systemmessages + warnings
 // 3 = boot log & errors + systemmessages + warnings + infos
 // 4 = boot log & errors + systemmessages + warnings + infos + debug
-int debug_mode = 4; 
+int debug_mode = 3; 
 
 // ********************
 // *****Config end*****
@@ -65,6 +62,7 @@ int debug_mode = 4;
 
 String PARAM_INPUT_1 = "esid";
 String PARAM_INPUT_2 = "pass";
+String PARAM_INPUT_3 = "apip";
 String content;
 int i = 0;
 int statusCode;
@@ -77,8 +75,9 @@ SSD1306Wire display(0x3c, 4, 14);   // ADDRESS, SDA, SCL  -  SDA and SCL usually
 // current temperature & humidity, updated in loop()
 float t = 0.0;
 float h = 0.0;
-String qsid_html = "Mobile-AP";
-String qpass_html = "password";
+String qsid_html = esid;
+String qpass_html = pass;
+String qapip_html = apip;
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
@@ -106,7 +105,30 @@ String processor(const String& var){
   else if(var == "QPASS"){
     return String(qpass_html);
   }
+  else if(var == "QAPIP"){
+    return String(qapip_html);
+  }
   return String();
+}
+
+String edata(int start, int ende){
+  String qsid = "";
+  String qsid3 ="";
+  for (int i = start; i < ende; ++i)
+  {
+    qsid3 = EEPROM.read(i); // 1 char to 1 string
+    int count = 0;
+    if (qsid3 == String('0')){} 
+    else {
+      qsid += char(EEPROM.read(i)); // here count is
+      if (debug_mode >= 4)
+      {
+        Serial.print("char: ");
+        Serial.println(qsid3);
+      }
+    }
+  }
+  return qsid;
 }
 
 void setup(){
@@ -131,102 +153,78 @@ void setup(){
   Serial.println("boot: mobile soft-ap started....");
   Serial.println("boot: reading eeprom data");
   
-  String qsid = "";
-  String qsid_read = "";
-  String qsid2 ="";
-  String qsid3 ="";
-  for (int i = 0; i < 32; ++i)
-  {
-    qsid_read = char(EEPROM.read(i)); // 1 tranlated char to  1 string
-    qsid2 += EEPROM.read(i); // 1 char addet to the complete string
-    qsid3 = EEPROM.read(i); // 1 char to 1 string
-    int count = 0;
-    if (qsid3 == String('0')){} 
-    else {
-      qsid += char(EEPROM.read(i)); // here count is
-      if (debug_mode >= 4)
-      {
-        Serial.print("char: ");
-        Serial.println(qsid3);
-        Serial.print("string: ");
-        Serial.println(qsid_read);
-      }
-    }
-  }
+
+  String edata_ssid = edata(0,32);
+  String edata_pass = edata(32,96);
+
   if (debug_mode >= 3)
   {
-    Serial.print("info: SSID: ");
-    Serial.println(qsid);
+    Serial.print("edata SSID: ");
+    Serial.println(edata_ssid);
+    Serial.print("edata PASS: ");
+    Serial.println(edata_pass);
   }
-  if (qsid2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
+  if (edata_ssid =="" && edata_pass ==""){
     if (debug_mode >= 1){
-      Serial.println("system: SSID from eeprom is empty! - default used!");
-    }
-  } else if (qsid2 ==""){
-    if (debug_mode >= 1){
-      Serial.println("system: SSID from eeprom read error! - default used!");
+      Serial.println("system: Data from eeprom is empty! - default used!");
     }
   } else {
     if (debug_mode >= 1){
-      Serial.println("system: SSID from eeprom is used!");
+      Serial.println("system: Data from eeprom is used!");
     }
-    String qsid_html = qsid;
-    esid = qsid;  // deaktivate for ignore eeprom data
+    String qsid_html = edata_ssid;
+    esid = edata_ssid;  // deaktivate for ignore eeprom data
+    String qpass_html = edata_pass;
+    pass = edata_pass;  // deaktivate for ignore eeprom data
   }
 
-
-  String qpass = "";
-  String qpass_read = "";
-  String qpass2 ="";
-  String qpass3 ="";
-  for (int i = 32; i < 96; ++i)
+  String edata_ip = edata(96,111);
+ if (debug_mode >= 3)
   {
-    qpass_read = char(EEPROM.read(i)); // 1 tranlated char to  1 string
-    qpass2 += EEPROM.read(i); // 1 char addet to the complete string
-    qpass3 = EEPROM.read(i); // 1 char to 1 string
-    int count = 0;
-    if (qpass3 == String('0')){} 
-    else {
-      qpass += char(EEPROM.read(i)); // here count is
-      if (debug_mode >= 4)
-      {
-        Serial.print("char: ");
-        Serial.println(qpass3);
-        Serial.print("string: ");
-        Serial.println(qpass_read);
-      }
-    }
+    Serial.print("edata IP: ");
+    Serial.println(edata_ip);
   }
-  if (debug_mode >= 3)
-  {
-    Serial.print("info: PASS: ");
-    Serial.println(qpass);
-  }
-  if (qpass2 =="255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255255"){
+  if (edata_ip ==""){
     if (debug_mode >= 1){
-      Serial.println("system: PASS from eeprom is empty! - default used!");
-    }
-  } else if (qpass2 ==""){
-    if (debug_mode >= 1){
-      Serial.println("system: PASS from eeprom read error! - default used!");
+      Serial.println("system: AP-IP from eeprom read error! - default used!");
     }
   } else {
     if (debug_mode >= 1){
-      Serial.println("system: PASS from eeprom is used!");
+      Serial.println("system: AP-IP from eeprom is used!");
     }
-    String qpass_html = qpass;
-    pass = qpass;  // deaktivate for ignore eeprom data
+    String qapip_html = edata_ip;
+    apip = edata_ip;  // deaktivate for ignore eeprom data
   }
-
   
+  IPAddress ap_ip;
+  const char *ap_ipch;
+  ap_ipch = apip.c_str();
+  ap_ip.fromString(ap_ipch);
+
+  if (debug_mode >= 4)
+  {
+    Serial.print("apip: ");
+    Serial.println(apip);
+    Serial.print("parse: ");
+    Serial.println(ap_ip[0]);
+    Serial.print("parse: ");
+    Serial.println(ap_ip[1]);        
+    Serial.print("parse: ");
+    Serial.println(ap_ip[2]);
+    Serial.print("parse: ");
+    Serial.println(ap_ip[3]);
+  }
+  IPAddress local_IP(ap_ip[0],ap_ip[1],ap_ip[2],ap_ip[3]); // nutze ip aus eeprom 
+  IPAddress gateway(ap_ip[0],ap_ip[1],ap_ip[2],ap_ip[3]); // nutze gareway aus eeprom
+  IPAddress subnet(255,255,255,0); // Subnetmask of the AP
+
   Serial.print("boot: setting soft-ap configuration ... ");
   Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
   Serial.print("boot: start soft-ap server ... ");
   Serial.println(WiFi.softAP(esid.c_str(), pass.c_str()) ? "Ready" : "Failed!");
-      Serial.print("boot: ssid:");
-      Serial.println(esid.c_str());
-
+  Serial.print("boot: ssid:");
+  Serial.println(esid.c_str());
   Serial.print("boot: soft-ap ip:");
   Serial.println(WiFi.softAPIP());
 
@@ -238,7 +236,6 @@ void setup(){
   Serial.println();
 
   display.clear();
-
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -253,10 +250,12 @@ void setup(){
   server.on("/esetw", HTTP_GET, [] (AsyncWebServerRequest *request) {
     String esid;
     String pass;
+    String apip;
     // GET input1 value on <ESP_IP>/update?output=<qsid>&state=<pass>
-    if (request->hasParam(PARAM_INPUT_1) && request->hasParam(PARAM_INPUT_2)) {
+    if (request->hasParam(PARAM_INPUT_1) && request->hasParam(PARAM_INPUT_2) && request->hasParam(PARAM_INPUT_2)) {
       esid = request->getParam(PARAM_INPUT_1)->value();
       pass = request->getParam(PARAM_INPUT_2)->value();
+      apip = request->getParam(PARAM_INPUT_3)->value();
       //esid += ";";
       //pass += ";";
       digitalWrite(esid.toInt(), pass.toInt());
@@ -265,7 +264,7 @@ void setup(){
         {
           Serial.println("system: clearing eeprom");
         }
-        for (int i = 0; i < 96; ++i) {
+        for (int i = 0; i < 111; ++i) {
           EEPROM.write(i, 0);
         }
         if (debug_mode >= 3)
@@ -274,6 +273,8 @@ void setup(){
           Serial.println(esid);
           Serial.print("info: pass:");
           Serial.println(pass);
+          Serial.print("info: apip:");
+          Serial.println(apip);
         }
         if (debug_mode >= 1)
         {
@@ -301,6 +302,19 @@ void setup(){
             Serial.println(pass[i]);
           }
         }
+        if (debug_mode >= 1)
+        {
+          Serial.println("writing eeprom apip:");
+        }
+        for (int i = 0; i < apip.length(); ++i)
+        {
+          EEPROM.write(96 + i, apip[i]);
+          if (debug_mode >= 1)
+          {
+            Serial.print("system: wrote: ");
+            Serial.println(apip[i]);
+          }
+        }
         EEPROM.commit();
         content = "{\"Success\":\"saved to eeprom... reset to boot into new wifi\"}";
         statusCode = 200;
@@ -310,8 +324,11 @@ void setup(){
           Serial.println(esid);
           Serial.print("system: new password:");
           Serial.println(pass);
+          Serial.print("system: new ip:");
+          Serial.println(apip);
         }
         request->send(200, "text/plain", content);
+        delay(5000);
         ESP.reset();
       } else {
         content = "{\"Error\":\"404 not found\"}";
@@ -380,6 +397,7 @@ long timeSinceLastModeSwitch = 0;
 void loop(){
   qsid_html = esid;
   qpass_html = pass;
+  qapip_html = apip;
   // clear the display
   display.clear();
   // draw the current demo method

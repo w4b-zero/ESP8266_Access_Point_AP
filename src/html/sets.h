@@ -202,6 +202,14 @@ p {
                   <input name='pass' value='%QPASS%' length=64>
                 </div>
               </div>  
+              <div id="tabelle_center">
+                <div id="tabelle_right">
+                  AP-IP:
+                </div>    
+                <div id="tabelle_left">
+                  <input name='apip' value='%QAPIP%' length=64>
+                </div>
+              </div>  
               <input type='submit'>
             </div>
           </form>

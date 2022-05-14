@@ -13,8 +13,9 @@ changes by me
 + addet webpanel with config & infos<br>
 <br>
 Browser (win/Firefox)<br>
+<img src="img/index.jpg"><br>
 <img src="img/settings.jpg"><br>
 <br>
 Mobile (android/chrome)<br>
-<img src="img/settings_mobile.jpg"><br>
+<img src="img/index_mobile.jpg"><img src="img/settings_mobile.jpg"><br>
 

@@ -86,6 +86,7 @@ float h = 0.0;
 String qsid_html = esid;
 String qpass_html = pass;
 String qapip_html = apip;
+String qclients_html = "0";
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
@@ -115,6 +116,9 @@ String processor(const String& var){
   }
   else if(var == "QAPIP"){
     return String(qapip_html);
+  }
+  else if(var == "QCLIENTS"){
+    return String(qclients_html);
   }
   return String();
 }
@@ -417,6 +421,8 @@ void loop(){
   qsid_html = esid;
   qpass_html = pass;
   qapip_html = apip;
+  String qclients =  String(WiFi.softAPgetStationNum());
+  qclients_html = qclients;
   // clear the display
   display.clear();
   // draw the current demo method

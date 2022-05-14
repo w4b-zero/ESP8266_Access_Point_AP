@@ -10,4 +10,4 @@ addet more infos on serial console.<br>
 import to platform.io<br>
 addet webpanel with config & infos<br>
 <br>
-<img src="img/settings.jpg" width="50%">
+<img src="img/settings.jpg" width="100%">

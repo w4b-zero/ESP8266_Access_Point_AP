@@ -12,9 +12,14 @@ changes by me
 + config stored in eeprom<br>
 + addet webpanel with config & infos<br>
 <br>
-Last Relase: v0.0.2<br>
+Last Relase: v0.0.3<br>
+https://github.com/w4b-zero/ESP8266_Access_Point_AP/releases/tag/v0.0.3
 
-
+Circuit<br>
+<table>
+<tr><td align="center"><img src="img/circuit.jpg"></td></tr>
+</table>
+<br>
 Browser (win/Firefox)<br>
 <table>
 <tr><td align="center">Home<br><img src="img/index.jpg"></td></tr>

@@ -30,7 +30,8 @@
 
 // Import HTML-Pages
 #include "html/index.h"
-#include "html/dhtinfo.h"
+#include "html/saved.h"
+#include "html/errorpage.h"
 #include "html/sets.h"
 
 // ******************
@@ -59,21 +60,20 @@ String apip = "192.168.1.1"; // IP of the AP
 // 2 = boot log & errors + systemmessages + warnings
 // 3 = boot log & errors + systemmessages + warnings + infos
 // 4 = boot log & errors + systemmessages + warnings + infos + debug
-int debug_mode = 3; 
+int debug_mode = 1; 
 
 // ********************
 // *****Config end*****
 // ********************
 CRGB leds[NUM_LEDS];
 
-String firmware_version = "v0.0.2";
+String firmware_version = "v0.0.3";
 
 String PARAM_INPUT_1 = "esid";
 String PARAM_INPUT_2 = "pass";
 String PARAM_INPUT_3 = "apip";
 String content;
 int i = 0;
-int statusCode;
 
 typedef void (*Demo)(void);
 int demoMode = 0;
@@ -87,6 +87,9 @@ String qsid_html = esid;
 String qpass_html = pass;
 String qapip_html = apip;
 String qclients_html = "0";
+int dataSend = 0;
+int statusCode = 200;
+
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
@@ -178,9 +181,9 @@ LEDS.setBrightness(20);
 
   if (debug_mode >= 3)
   {
-    Serial.print("edata SSID: ");
+    Serial.print("info: edata SSID: ");
     Serial.println(edata_ssid);
-    Serial.print("edata PASS: ");
+    Serial.print("info: edata PASS: ");
     Serial.println(edata_pass);
   }
   if (edata_ssid =="" && edata_pass ==""){
@@ -200,7 +203,7 @@ LEDS.setBrightness(20);
   String edata_ip = edata(96,111);
  if (debug_mode >= 3)
   {
-    Serial.print("edata IP: ");
+    Serial.print("info: edata AP-IP: ");
     Serial.println(edata_ip);
   }
   if (edata_ip ==""){
@@ -246,12 +249,15 @@ LEDS.setBrightness(20);
 
   Serial.print("boot: start soft-ap server ... ");
   Serial.println(WiFi.softAP(esid.c_str(), pass.c_str()) ? "Ready" : "Failed!");
-  Serial.print("boot: ssid:");
-  Serial.println(esid.c_str());
-  Serial.print("boot: soft-ap ip:");
-  Serial.println(WiFi.softAPIP());
-
-  Serial.println("boot: soft-ap startet!");
+  if (debug_mode == 3){
+    Serial.print("info: SSID:");
+    Serial.println(esid.c_str());
+    Serial.print("info: PASS:");
+    Serial.println(pass.c_str());
+    Serial.print("info: AP-IP:");
+    Serial.println(WiFi.softAPIP());
+  }
+  Serial.println("boot: access point startet!");
   Serial.println();
   Serial.println("************************");
   Serial.println("*mobile soft-ap online!*");
@@ -267,9 +273,6 @@ LEDS.setBrightness(20);
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html, processor);
   });
-  server.on("/dht", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", dhtinfo_html, processor);
-  });
   server.on("/sets", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", sets_html, processor);
   });
@@ -277,14 +280,15 @@ LEDS.setBrightness(20);
     String esid;
     String pass;
     String apip;
+    const char* content = saved_html;
     // GET input1 value on <ESP_IP>/update?output=<qsid>&state=<pass>
-    if (request->hasParam(PARAM_INPUT_1) && request->hasParam(PARAM_INPUT_2) && request->hasParam(PARAM_INPUT_2)) {
+    if (request->hasParam(PARAM_INPUT_1) && request->hasParam(PARAM_INPUT_2) && request->hasParam(PARAM_INPUT_3)) {
       esid = request->getParam(PARAM_INPUT_1)->value();
       pass = request->getParam(PARAM_INPUT_2)->value();
       apip = request->getParam(PARAM_INPUT_3)->value();
       //esid += ";";
       //pass += ";";
-      digitalWrite(esid.toInt(), pass.toInt());
+      //digitalWrite(esid.toInt(), pass.toInt());
       if (esid.length() > 0 && pass.length() > 0) {
         if (debug_mode >= 1)
         {
@@ -304,46 +308,48 @@ LEDS.setBrightness(20);
         }
         if (debug_mode >= 1)
         {
-          Serial.println("system: writing eeprom ssid:");
+          Serial.println("system: writing eeprom SSID");
         }
         for (int i = 0; i < esid.length(); ++i)
         {
           EEPROM.write(i, esid[i]);
-          if (debug_mode >= 1)
+          if (debug_mode >= 4)
           {
-            Serial.print("system: wrote: ");
+            Serial.print("debug: wrote: ");
             Serial.println(esid[i]);
           }
         }
         if (debug_mode >= 1)
         {
-          Serial.println("writing eeprom pass:");
+          Serial.println("system: writing eeprom PASS");
         }
         for (int i = 0; i < pass.length(); ++i)
         {
           EEPROM.write(32 + i, pass[i]);
-          if (debug_mode >= 1)
+          if (debug_mode >= 4)
           {
-            Serial.print("system: wrote: ");
+            Serial.print("debug: wrote: ");
             Serial.println(pass[i]);
           }
         }
         if (debug_mode >= 1)
         {
-          Serial.println("writing eeprom apip:");
+          Serial.println("system: writing eeprom AP-IP:");
         }
         for (int i = 0; i < apip.length(); ++i)
         {
           EEPROM.write(96 + i, apip[i]);
-          if (debug_mode >= 1)
+          if (debug_mode >= 4)
           {
-            Serial.print("system: wrote: ");
+            Serial.print("debug: wrote: ");
             Serial.println(apip[i]);
           }
         }
         EEPROM.commit();
-        content = "{\"Success\":\"saved to eeprom... reset to boot into new wifi\"}";
+//        content = "Success: saved to eeprom... reset to boot into new wifi";
+        content = saved_html;
         statusCode = 200;
+        dataSend = 1;
         if (debug_mode >= 1)
         {
           Serial.print("system: new ssid:");
@@ -353,11 +359,8 @@ LEDS.setBrightness(20);
           Serial.print("system: new ip:");
           Serial.println(apip);
         }
-        request->send(200, "text/plain", content);
-        delay(5000);
-        ESP.reset();
       } else {
-        content = "{\"Error\":\"404 not found\"}";
+        content = errorpage_html;
         statusCode = 404;
         if (debug_mode >= 0)
         {
@@ -366,14 +369,14 @@ LEDS.setBrightness(20);
       }
     }
     else {
-      content = "{\"Error\":\"No Data send!\"}";
+      content = errorpage_html;
       statusCode = 404;
       if (debug_mode >= 0)
       {
        Serial.println("error: no data send!");
       }
     }
-    request->send(statusCode, "application/json", content);
+    request->send_P(statusCode, "text/html", content, processor);
   });
 
   // Start server
@@ -416,7 +419,7 @@ void logo() {
   display.setFont(ArialMT_Plain_16);
   display.drawString(64, 49, esid);
 }
-Demo demos[] = {starttext, statstext, logo};
+Demo demos[] = {statstext, logo, starttext};
 int demoLength = (sizeof(demos) / sizeof(Demo));
 long timeSinceLastModeSwitch = 0;
 
@@ -430,14 +433,24 @@ void loop(){
   display.clear();
   // draw the current demo method
 
+      if (statusCode == 200 && dataSend == 1)
+      {
+      if (debug_mode >= 0)
+      {
+        Serial.print("System: Data wrote! Restart!");
+      }
+        delay(1000);
+        ESP.restart();
+        dataSend = 0;
+      }  
 
   if (millis() - timeSinceLastModeSwitch > SCREEN_SWITCH_TIME) {
     demoMode = (demoMode + 1)  % demoLength;
     demos[demoMode]();
     display.display();
-      if (debug_mode >= 3 )
+      if (debug_mode >= 4 )
       {
-        Serial.println("info: switch screen");
+        Serial.println("debug: switch screen");
       }
     timeSinceLastModeSwitch = millis();
   }
@@ -459,9 +472,9 @@ void loop(){
     }
     else {
       t = newT;
-      if (debug_mode >= 1)
+      if (debug_mode >= 3)
       {
-        Serial.println("system: temperature: " + String(t));
+        Serial.println("info: temperature: " + String(t));
       }
     }
     // Read Humidity
@@ -475,9 +488,9 @@ void loop(){
     }
     else {
       h = newH;
-      if (debug_mode >= 1)
+      if (debug_mode >= 3)
       {
-        Serial.println("system: humidity:" + String(h));
+        Serial.println("info: humidity:" + String(h));
       }
     }
       if (debug_mode >= 1)

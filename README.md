@@ -10,4 +10,9 @@ addet more infos on serial console.<br>
 import to platform.io<br>
 addet webpanel with config & infos<br>
 <br>
-<img src="img/settings.jpg" width="100%">
+Browser (win/Firefox)<br>
+<img src="img/settings.jpg" width="100%"><br>
+<br>
+Mobile (android/chrome)<br>
+<img src="img/settings_mobile.jpg" width="100%"><br>
+

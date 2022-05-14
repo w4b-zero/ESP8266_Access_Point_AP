@@ -23,6 +23,7 @@
 #include <Wire.h>               
 #include "SSD1306Wire.h"
 #include <EEPROM.h>
+#include <FastLED.h>
 
 // Import Wifi Logo         
 #include "data/images.h"
@@ -46,6 +47,11 @@ String apip = "192.168.1.1"; // IP of the AP
 #define DHTTYPE    DHT22     // DHT 22 (AM2302)
 //#define DHTTYPE    DHT21     // DHT 21 (AM2301)
 
+#define NUM_LEDS 1
+#define DATA_PIN 12
+#define CLOCK_PIN 13
+
+
 #define SCREEN_SWITCH_TIME 3000 // 3000=3Sek. to switch the infos on the ssd1306-Screen
 
 // 0 = boot log & errors
@@ -58,6 +64,8 @@ int debug_mode = 3;
 // ********************
 // *****Config end*****
 // ********************
+CRGB leds[NUM_LEDS];
+
 
 
 String PARAM_INPUT_1 = "esid";
@@ -137,12 +145,16 @@ void setup(){
   dht.begin();
   display.init();
   display.clear();
-
+  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);  // GRB ordering is typical
+LEDS.setBrightness(20);
 //  display.flipScreenVertically();
 //  display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_16);
   display.drawString(10, 0, "Setting AP...");
   display.display(); 
+    leds[0].setRGB( 255, 0, 0);
+    FastLED.show();
+
 
 
   Serial.println();
@@ -152,7 +164,7 @@ void setup(){
   Serial.println();
   Serial.println("boot: mobile soft-ap started....");
   Serial.println("boot: reading eeprom data");
-  
+  delay(1000);
 
   String edata_ssid = edata(0,32);
   String edata_pass = edata(32,96);
@@ -218,6 +230,10 @@ void setup(){
   IPAddress gateway(ap_ip[0],ap_ip[1],ap_ip[2],ap_ip[3]); // nutze gareway aus eeprom
   IPAddress subnet(255,255,255,0); // Subnetmask of the AP
 
+      leds[0].setRGB( 255, 255, 0);
+      FastLED.show();
+  delay(1000);
+
   Serial.print("boot: setting soft-ap configuration ... ");
   Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
@@ -236,6 +252,9 @@ void setup(){
   Serial.println();
 
   display.clear();
+      leds[0].setRGB( 0, 255, 0);
+      FastLED.show();
+  delay(1000);
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){

@@ -66,7 +66,7 @@ int debug_mode = 3;
 // ********************
 CRGB leds[NUM_LEDS];
 
-
+String firmware_version = "v0.0.2";
 
 String PARAM_INPUT_1 = "esid";
 String PARAM_INPUT_2 = "pass";
@@ -119,6 +119,9 @@ String processor(const String& var){
   }
   else if(var == "QCLIENTS"){
     return String(qclients_html);
+  }
+  else if(var == "FIRMWARE_VERSION"){
+    return String(firmware_version);
   }
   return String();
 }

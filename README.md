@@ -12,7 +12,7 @@ changes by me
 + config stored in eeprom<br>
 + addet webpanel with config & infos<br>
 <br>
-Last Relase: v0.0.1<br>
+Last Relase: v0.0.2<br>
 
 
 Browser (win/Firefox)<br>

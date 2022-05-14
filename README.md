@@ -15,5 +15,5 @@ Browser (win/Firefox)<br>
 <img src="img/settings.jpg"><br>
 <br>
 Mobile (android/chrome)<br>
-<img src="img/settings_mobile.jpg" width="50%"><br>
+<img src="img/settings_mobile.jpg"><br>
 

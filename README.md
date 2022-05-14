@@ -5,11 +5,12 @@ Original author's Github page: https://github.com/RuiSantosdotme<br>
 <br>
 changes by me
 -------------
-+ ssd1306 Display<br>
-+ ws2812b Status LED<br> 
-+ more infos on serial console.<br>
++ addet ssd1306 Display<br>
++ addet ws2812b Status LED<br> 
++ addet more infos on serial console.<br>
 + import to platform.io<br>
-+ webpanel with config & infos<br>
++ config stored in eeprom<br>
++ addet webpanel with config & infos<br>
 <br>
 Browser (win/Firefox)<br>
 <img src="img/settings.jpg"><br>

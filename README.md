@@ -4,7 +4,7 @@
 
 ### Use as a mobile network.
 ### for example to control multiple <a href="https://kno.wled.ge/" target="_blank" alt="WLED"><img src="img/logowled.png" alt="WLED" title="WLED"></a> projects via <a href="http://www.live-leds.de/" target="_blank" alt="Jinx!" title="Jinx!"><img src="img/logojinx.png"></a><br>at party locations where there is no existing WLAN.
-<br><br>
+
 changes by me
 -------------
 + addet ssd1306 Display<br>
@@ -13,7 +13,7 @@ changes by me
 + import to platform.io<br>
 + config stored in eeprom<br>
 + addet webpanel with config & infos<br>
-<br>
+
 Last Relase: v0.0.3<br>
 https://github.com/w4b-zero/ESP8266_Access_Point_AP/releases/tag/v0.0.3
 

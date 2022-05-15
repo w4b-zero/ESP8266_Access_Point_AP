@@ -248,7 +248,7 @@ LEDS.setBrightness(20);
   Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
   Serial.print("boot: start soft-ap server ... ");
-  Serial.println(WiFi.softAP(esid.c_str(), pass.c_str()) ? "Ready" : "Failed!");
+  Serial.println(WiFi.softAP(esid.c_str(), pass.c_str(),1,false,8) ? "Ready" : "Failed!");
   if (debug_mode == 3){
     Serial.print("info: SSID:");
     Serial.println(esid.c_str());

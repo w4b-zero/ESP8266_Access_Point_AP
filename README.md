@@ -13,6 +13,7 @@ changes by me
 + import to platform.io<br>
 + config stored in eeprom<br>
 + addet webpanel with config & infos<br>
++ from max 4 clients to max 8 clients switched
 
 Last Relase: v0.0.3<br>
 https://github.com/w4b-zero/ESP8266_Access_Point_AP/releases/tag/v0.0.3

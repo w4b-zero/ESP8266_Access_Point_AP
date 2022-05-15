@@ -3,6 +3,8 @@ Fork from https://github.com/RuiSantosdotme/Random-Nerd-Tutorials/blob/fa34159d9
 Website with instructions: https://randomnerdtutorials.com/esp8266-nodemcu-access-point-ap-web-server/<br>
 Original author's Github page: https://github.com/RuiSantosdotme<br>
 <br>
+for example as a mobile network around several <a href="https://kno.wled.ge/" target="_blank">WLED</a> projects via <a href="http://www.live-leds.de/" target="_blank">Jinx!</a> to control.
+<br>
 changes by me
 -------------
 + addet ssd1306 Display<br>

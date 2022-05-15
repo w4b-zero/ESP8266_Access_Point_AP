@@ -1,10 +1,8 @@
-# ESP8266_Access_Point_AP
-Fork from https://github.com/RuiSantosdotme/Random-Nerd-Tutorials/blob/fa34159d963cd479a13248008af3f54a1afb4066/Projects/ESP8266/ESP8266_Access_Point_AP.ino<br>
-Website with instructions: https://randomnerdtutorials.com/esp8266-nodemcu-access-point-ap-web-server/<br>
-Original author's Github page: https://github.com/RuiSantosdotme<br>
-<br>
-for example as a mobile network around several <a href="https://kno.wled.ge/" target="_blank">WLED</a> projects via <a href="http://www.live-leds.de/" target="_blank">Jinx!</a> to control.
-<br>
+# ESP8266 mobile Access Point
+###### Fork of ESP8266_Access_Point_AP.ino[^1] from Rui Santos[^3]<br>Website with instructions: ESP8266 NodeMCU Access Point (AP) for Web Server[^2]
+### Use as a mobile network.
+### for example to control multiple <a href="https://kno.wled.ge/" target="_blank" alt="WLED"><img src="img/logowled.png" alt="WLED" title="WLED"></a> projects via <a href="http://www.live-leds.de/" target="_blank" alt="Jinx!" title="Jinx!"><img src="img/logojinx.png"></a><br>at party locations where there is no existing WLAN.
+<br><br>
 changes by me
 -------------
 + addet ssd1306 Display<br>
@@ -31,3 +29,6 @@ Browser (win/Firefox)<br>
 Mobile (android/chrome)<br>
 <table><tr><td align="center">Home<br><img src="img/index_mobile.jpg"></td><td align="center">Settings<br><img src="img/settings_mobile.jpg"></td></tr></table>
 
+[^1]: https://github.com/RuiSantosdotme/Random-Nerd-Tutorials/blob/fa34159d963cd479a13248008af3f54a1afb4066/Projects/ESP8266/ESP8266_Access_Point_AP.ino
+[^2]: https://randomnerdtutorials.com/esp8266-nodemcu-access-point-ap-web-server/
+[^3]: https://github.com/RuiSantosdotme

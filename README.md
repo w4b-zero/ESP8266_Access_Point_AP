@@ -1,8 +1,7 @@
 # ESP8266 mobile Access Point
 ###### Fork of ESP8266_Access_Point_AP.ino[^1] from Rui Santos[^3]<br>Website with instructions: ESP8266 NodeMCU Access Point (AP) for Web Server[^2]
 ### Use as a mobile network.
-### To control multiple <a href="https://kno.wled.ge/" target="_blank" alt="WLED"><img src="img/logowled.png" alt="WLED" title="WLED"></a> projects via <a href="http://www.live-leds.de/" target="_blank" alt="Jinx!" title="Jinx!"><img src="img/logojinx.png"></a>
-### for example at party locations where there is no existing WLAN.
+### for example to control multiple <a href="https://kno.wled.ge/" target="_blank" alt="WLED"><img src="img/logowled.png" alt="WLED" title="WLED"></a> projects via <a href="http://www.live-leds.de/" target="_blank" alt="Jinx!" title="Jinx!"><img src="img/logojinx.png"></a><br>at party locations where there is no existing WLAN.
 <br><br>
 changes by me
 -------------

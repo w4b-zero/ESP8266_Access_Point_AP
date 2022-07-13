@@ -2,8 +2,9 @@
 ###### Fork of ESP8266_Access_Point_AP.ino[^1] from Rui Santos[^3]<br>Website with instructions: ESP8266 NodeMCU Access Point (AP) for Web Server[^2]
 <img src="img/esp_ap_logo.png"><img src="img/esp_ap_logo_mono_white.png">
 
-### Use as a mobile network.
-### for example to control multiple <a href="https://kno.wled.ge/" target="_blank" alt="WLED"><img src="img/logowled.png" alt="WLED" title="WLED"></a> projects via <a href="http://www.live-leds.de/" target="_blank" alt="Jinx!" title="Jinx!"><img src="img/logojinx.png"></a><br>at party locations where there is no existing WLAN.
+will no longer be developed further!
+Use <a href="https://github.com/martin-ger/esp32_nat_router">https://github.com/martin-ger/esp32_nat_router</a> or
+<a href="https://github.com/martin-ger/esp_wifi_repeater">https://github.com/martin-ger/esp_wifi_repeater</a> ! - His firmware is a better choice!
 
 changes by me
 -------------
